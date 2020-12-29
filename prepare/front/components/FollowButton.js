@@ -1,9 +1,7 @@
-const FollowButton = () => {
-  return (
-    <div>
-      FollowButton
-    </div>
-  )
-}
+const FollowButton = () => (
+  <div>
+    FollowButton
+  </div>
+);
 
-export default FollowButton
+export default FollowButton;

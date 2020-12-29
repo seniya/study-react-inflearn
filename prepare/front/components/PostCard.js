@@ -1,34 +1,33 @@
-import React, { useState, useCallback } from 'react'
-import { Card, Button, Avatar, Popover, List, Comment } from 'antd'
-import PropTypes from 'prop-types'
-import { RetweetOutlined, HeartTwoTone, HeartOutlined, MessageOutlined, EllipsisOutlined } from '@ant-design/icons'
-import styled from 'styled-components'
-import Link from 'next/link'
-import { useSelector } from 'react-redux'
+import React, { useState, useCallback } from 'react';
+import { Card, Button, Avatar, Popover, List, Comment } from 'antd';
+import PropTypes from 'prop-types';
+import { RetweetOutlined, HeartTwoTone, HeartOutlined, MessageOutlined, EllipsisOutlined } from '@ant-design/icons';
+import styled from 'styled-components';
+import Link from 'next/link';
+import { useSelector } from 'react-redux';
 
-import CommentForm from './CommentForm'
-import PostCardContent from './PostCardContent'
-import PostImages from './PostImages'
-import FollowButton from './FollowButton'
+import CommentForm from './CommentForm';
+import PostCardContent from './PostCardContent';
+import PostImages from './PostImages';
+import FollowButton from './FollowButton';
 
 const CardWrapper = styled.div`
   margin-bottom: 20px;
 `;
 
 const PostCard = ({ post }) => {
+  const [commentFormOpened, setCommentFormOpened] = useState(false);
+  const id = useSelector((state) => state.user.me?.id);
 
-  const [commentFormOpened, setCommentFormOpened] = useState(false)
-  const id = useSelector((state) => state.user.me?.id)
-
-  const [liked, setLiked] = useState(false)
+  const [liked, setLiked] = useState(false);
 
   const onToggleLike = useCallback(() => {
     setLiked((prev) => !prev);
-  }, [])
+  }, []);
 
   const onToggleComment = useCallback(() => {
     setCommentFormOpened((prev) => !prev);
-  }, [])
+  }, []);
 
   return (
     <CardWrapper key={post.id}>
@@ -90,8 +89,8 @@ const PostCard = ({ post }) => {
         </>
       )}
     </CardWrapper>
-  )
-}
+  );
+};
 
 PostCard.propTypes = {
   post: PropTypes.shape({
@@ -100,8 +99,8 @@ PostCard.propTypes = {
     content: PropTypes.string,
     createdAt: PropTypes.object,
     Comments: PropTypes.arrayOf(PropTypes.any),
-    Images: PropTypes.arrayOf(PropTypes.any)
-  })
-}
+    Images: PropTypes.arrayOf(PropTypes.any),
+  }).isRequired,
+};
 
-export default PostCard
+export default PostCard;

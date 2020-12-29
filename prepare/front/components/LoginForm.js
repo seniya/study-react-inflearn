@@ -4,8 +4,8 @@ import Link from 'next/link'
 import styled from 'styled-components'
 
 import userInput from '../hooks/useInput'
-import { useDispatch } from 'react-redux'
-import { loginAction } from '../reducers/user'
+import { useDispatch, useSelector } from 'react-redux'
+import { loginRequestAction } from '../reducers/user'
 
 const ButtonWrapper = styled.div`
   margin-top: 10px;
@@ -17,23 +17,25 @@ const FormWrapper = styled(Form)`
 const LoginForm = () => {
   const dispatch = useDispatch()
 
-  const [id, onChangeId] = userInput('')
+  const { logInLoading } = useSelector(state => state.user)
+
+  const [email, onChangeEmail] = userInput('')
   const [password, onChangePassword] = userInput('')
   
   const style = useMemo(() => ({marginTop: 10}), [])
 
   const onSubmitForm = useCallback(() => {
-    console.log(id, password)    
-    dispatch(loginAction({id, password}))
-  }, [id, password])
+    console.log(email, password)    
+    dispatch(loginRequestAction({email, password}))
+  }, [email, password])
   
 
   return (
     <FormWrapper onFinish={onSubmitForm}>
       <div>
-        <label htmlFor="user-id">아이디</label>
+        <label htmlFor="user-email">이메일</label>
         <br />
-        <Input name="user-id" value={id} onChange={onChangeId} required/>
+        <Input name="user-email" type="email" value={email} onChange={onChangeEmail} required/>
       </div>
       <div>
         <label htmlFor="user-password">비밀번호</label>
@@ -46,7 +48,7 @@ const LoginForm = () => {
           required />
       </div>
       <ButtonWrapper style={style}>
-        <Button type="primary" htmlType="submit" loading={false} required>
+        <Button type="primary" htmlType="submit" loading={logInLoading} required>
           로그인
         </Button>
         <Link href="/signup" >
