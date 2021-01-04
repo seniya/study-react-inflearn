@@ -1,7 +1,5 @@
-const ZeroCho = () => {
-  return (
-    <div>Hello, ZeroCho!</div>
-  )
-}
+const ZeroCho = () => (
+  <div>Hello, ZeroCho!</div>
+);
 
-export default ZeroCho
+export default ZeroCho;
