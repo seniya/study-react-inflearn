@@ -2,6 +2,8 @@ import { Switch, Route, Link, useLocation } from 'react-router-dom';
 import { lazy, Suspense, useState } from 'react';
 import { Layout, Menu } from 'antd';
 import { HomeOutlined, CoffeeOutlined, BulbOutlined, SettingOutlined } from '@ant-design/icons';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/configureStore';
 
 const Home = lazy(() => import('./home'));
 const About = lazy(() => import('./about'));
@@ -13,12 +15,12 @@ const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 
 function Container() {
-  const location = useLocation();
+  const userState = useSelector((store: RootState) => store.user.getUser);
+  const { user, token } = userState;
 
-  console.log('location : ', location.pathname);
+  const location = useLocation();
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const onCollapse = (collapsed_: boolean) => {
-    console.log('onCollapse collapsed : ', collapsed_);
     setCollapsed(collapsed_);
   };
 
@@ -26,8 +28,13 @@ function Container() {
     <>
       <Layout style={{ minHeight: '100vh' }}>
         <Sider collapsible collapsed={collapsed} onCollapse={onCollapse}>
-          <div className="logo" />
-          <Menu theme="dark" mode="inline" defaultSelectedKeys={[location.pathname]}>
+          <div className="logo">
+            <p>
+              <span>안녕하세요. </span>
+              <span>{token ? `${user.name} 님` : '손님'}</span>
+            </p>
+          </div>
+          <Menu theme="dark" mode="inline" selectedKeys={[location.pathname]}>
             <Menu.Item key="/" icon={<HomeOutlined style={{ fontSize: '18px' }} />}>
               <Link to="/">Home</Link>
             </Menu.Item>
@@ -42,7 +49,9 @@ function Container() {
               icon={<SettingOutlined style={{ fontSize: '18px' }} />}
               title="Admin"
             >
-              <Menu.Item key="6">Team 1</Menu.Item>
+              <Menu.Item key="/sign-in">
+                <Link to="/sign-in">sign-in</Link>
+              </Menu.Item>
               <Menu.Item key="8">Team 2</Menu.Item>
             </SubMenu>
           </Menu>

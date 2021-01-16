@@ -1,4 +1,4 @@
-import { takeEvery, call, put } from 'redux-saga/effects';
+import { call, put, takeLatest, all, fork } from 'redux-saga/effects';
 import { apiEmployees } from './employee.api';
 import { FETCH_EMPLOYEES } from './employee.reducer';
 
@@ -11,4 +11,12 @@ function* fetch() {
   }
 }
 
-export default [takeEvery(FETCH_EMPLOYEES.REQUEST, fetch)];
+function* watchFetch() {
+  yield takeLatest(FETCH_EMPLOYEES.REQUEST, fetch);
+}
+
+// export default [takeEvery(FETCH_EMPLOYEES.REQUEST, fetch)];
+
+export default function* saga() {
+  yield all([fork(watchFetch)]);
+}

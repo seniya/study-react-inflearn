@@ -1,3 +1,4 @@
+import { combineReducers } from 'redux';
 import { ActionType, createReducer, createAsyncAction } from 'typesafe-actions';
 import { IPost, IPostRequest, IPostResponse, IPostError } from './post.interface';
 
@@ -28,7 +29,7 @@ const initialState: State = {
   message: '',
 };
 
-const reducer = createReducer<State, Actions>(initialState)
+const fetchPostsReducer = createReducer<State, Actions>(initialState)
   .handleAction(fetchPosts.success, (state, action) => {
     return { ...state, posts: action.payload.posts };
   })
@@ -38,5 +39,9 @@ const reducer = createReducer<State, Actions>(initialState)
   .handleAction(fetchPosts.request, (state) => {
     return { ...state };
   });
+
+const reducer = combineReducers({
+  fetchPostsReducer,
+});
 
 export default reducer;

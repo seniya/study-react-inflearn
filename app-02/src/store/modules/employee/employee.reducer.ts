@@ -1,3 +1,4 @@
+import { combineReducers } from 'redux';
 import { ActionType, createReducer, createAsyncAction } from 'typesafe-actions';
 import { IEmployee, IRequest, IResponse, IError } from './employee.interface';
 
@@ -28,7 +29,7 @@ const initialState: State = {
   message: '',
 };
 
-const reducer = createReducer<State, Actions>(initialState)
+const fetchEmployeesReducer = createReducer<State, Actions>(initialState)
   .handleAction(fetchEmployees.success, (state, action) => {
     return { ...state, employees: action.payload.employees };
   })
@@ -38,5 +39,9 @@ const reducer = createReducer<State, Actions>(initialState)
   .handleAction(fetchEmployees.request, (state) => {
     return { ...state };
   });
+
+const reducer = combineReducers({
+  fetchEmployeesReducer,
+});
 
 export default reducer;

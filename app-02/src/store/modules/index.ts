@@ -1,19 +1,25 @@
+import { History } from 'history';
 import { combineReducers } from 'redux';
-import { ForkEffect } from 'redux-saga/effects';
+import { all, fork } from 'redux-saga/effects';
+import { connectRouter } from 'connected-react-router';
 
 import employee from './employee';
 import post from './post';
+import user from './user';
 
-const combineSagas = (param: { [key: string]: ForkEffect<never>[] }) =>
-  function* () {
-    const targetSagas = Object.values(param).flat();
+const rootReducer = (history: History) =>
+  combineReducers({
+    user: user.reducer,
+    post: post.reducer,
+    employee: employee.reducer,
+    router: connectRouter(history),
+  });
 
-    for (let i = 0; i < targetSagas.length; i++) {
-      yield targetSagas[i];
-    }
-  };
+function* rootSaga() {
+  yield all([fork(user.saga), fork(post.saga), fork(employee.saga)]);
+}
 
 export default {
-  rootReducer: combineReducers({ employee: employee.reducer, post: post.reducer }),
-  rootSagas: combineSagas({ employee: employee.saga, post: post.saga }),
+  rootReducer,
+  rootSaga,
 };

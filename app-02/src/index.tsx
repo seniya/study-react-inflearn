@@ -4,10 +4,16 @@ import { BrowserRouter } from 'react-router-dom';
 import 'antd/dist/antd.css';
 import './assets/css/app.scss';
 import App from './App';
+import { createBrowserHistory } from 'history';
 // import reportWebVitals from './reportWebVitals';
 
 import { Provider } from 'react-redux';
-import store from './store';
+import configureStore from './store/configureStore';
+
+// const initialState = window.__INITIAL_STATE__;
+
+const history = createBrowserHistory();
+const store = configureStore(undefined, history);
 
 ReactDOM.render(
   <BrowserRouter>
