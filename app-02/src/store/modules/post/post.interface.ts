@@ -11,9 +11,16 @@ export interface IPost {
 export interface IPostRequest {}
 
 export interface IPostResponse {
-  posts: IPost[];
+  data: IPost[];
+  result: {
+    code: string | null;
+    message: string | null;
+  };
 }
 
-export interface IPostError {
-  message: string;
+export interface IPostState {
+  isLoading: boolean;
+  isDone: boolean;
+  error: string | null;
+  posts: IPost[];
 }

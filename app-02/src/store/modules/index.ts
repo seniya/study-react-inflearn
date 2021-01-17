@@ -4,19 +4,19 @@ import { all, fork } from 'redux-saga/effects';
 import { connectRouter } from 'connected-react-router';
 
 import employee from './employee';
-import post from './post';
-import user from './user';
+import postModule from './post';
+import userModule from './user';
 
 const rootReducer = (history: History) =>
   combineReducers({
-    user: user.reducer,
-    post: post.reducer,
+    user: userModule.reducer,
+    post: postModule.reducer,
     employee: employee.reducer,
     router: connectRouter(history),
   });
 
 function* rootSaga() {
-  yield all([fork(user.saga), fork(post.saga), fork(employee.saga)]);
+  yield all([fork(userModule.saga), fork(postModule.saga), fork(employee.saga)]);
 }
 
 export default {

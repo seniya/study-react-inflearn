@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { RootState } from '../store/configureStore';
-import User from '../store/modules/user';
+import userModule from '../store/modules/user';
 
 const layout = {
   labelCol: { span: 8 },
@@ -16,12 +16,20 @@ const tailLayout = {
 function SignIn() {
   const history = useHistory();
   const dispatch = useDispatch();
-  const userState = useSelector((store: RootState) => store.user.signin);
+
+  const userState = useSelector((store: RootState) => store.user.userReducer);
+
+  // const userState = useSelector((store: RootState) => store.user.signin);
   const { isLoading, isDone: isSigninDone, error: isSigninError, user, token } = userState;
 
   const fetchSignin = (values: any) => {
-    console.log('fetchSignin');
-    dispatch(User.actions.signInAction.request(values));
+    // console.log('fetchSignin signinSlice : ', signinSlice);
+    dispatch(
+      userModule.actions.SIGN_IN_REQUEST({
+        email: values.email,
+        password: values.password,
+      }),
+    );
   };
 
   const onFinish = (values: any) => {
@@ -39,19 +47,20 @@ function SignIn() {
     }
   }, [token]);
 
-  useEffect(() => {
-    if (isSigninDone) {
-      history.push('/');
-    }
-  }, [isSigninDone]);
-
+  // useEffect(() => {
+  //   if (isSigninDone) {
+  //     history.push('/');
+  //   }
+  // }, [isSigninDone]);
+  // const isLoading = false;
   return (
     <>
       <div>
+        {/* */}
         <p>isLoading: {isLoading ? 'true' : 'false'}</p>
         <p>isDone: {isSigninDone ? 'true' : 'false'}</p>
         <p>error: {isSigninError}</p>
-        <p>token: {user.name}</p>
+        <p>name: {user.name}</p>
         <p>token: {token}</p>
       </div>
       <Form

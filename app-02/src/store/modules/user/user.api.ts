@@ -1,29 +1,28 @@
 import { AxiosResponse } from 'axios';
 import { axiosInstance } from '../../../utils/axiosInstance';
-import { IGetUserRequest, ISigninRequest } from './user.interface';
+import { IUserRequest } from './user.interface';
 
-export async function apiSignin(payload: ISigninRequest) {
-  try {
-    const response: AxiosResponse = await axiosInstance({
-      method: 'POST',
-      url: '/authentication/sign-in',
-      data: payload,
-    });
+export async function apiSignin(payload: IUserRequest) {
+  const response: AxiosResponse = await axiosInstance({
+    method: 'POST',
+    url: '/authentication/sign-in',
+    data: payload,
+  });
+  if (response.data?.result?.code === 'RS0000') {
     return response.data;
-  } catch (error) {
-    return error;
+  } else {
+    throw new Error(response.data?.result?.message);
   }
 }
 
-export async function apiGetUser(payload: IGetUserRequest) {
-  try {
-    const response: AxiosResponse = await axiosInstance({
-      method: 'POST',
-      url: '/authentication/getMe',
-      data: payload,
-    });
+export async function apiGetUser() {
+  const response: AxiosResponse = await axiosInstance({
+    method: 'GET',
+    url: '/authentication/get-me',
+  });
+  if (response.data?.result?.code === 'RS0000') {
     return response.data;
-  } catch (error) {
-    return error;
+  } else {
+    throw new Error(response.data?.result?.message);
   }
 }

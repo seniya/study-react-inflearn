@@ -1,47 +1,40 @@
 import { combineReducers } from 'redux';
-import { ActionType, createReducer, createAsyncAction } from 'typesafe-actions';
-import { IPost, IPostRequest, IPostResponse, IPostError } from './post.interface';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { IPostState, IPostResponse } from './post.interface';
 
-export const FETCH_POSTS = {
-  REQUEST: 'POSTS_FETCH_REQUEST',
-  SUCCESS: 'POSTS_FETCH_SUCCESS',
-  FAILURE: 'POSTS_FETCH_FAILURE',
-};
-
-export const fetchPosts = createAsyncAction(
-  FETCH_POSTS.REQUEST,
-  FETCH_POSTS.SUCCESS,
-  FETCH_POSTS.FAILURE,
-)<IPostRequest, IPostResponse, IPostError>();
-
-const actions = {
-  fetchPosts,
-};
-
-type Actions = ActionType<typeof actions>;
-type State = {
-  posts: IPost[];
-  message: string;
-};
-
-const initialState: State = {
+const initialState: IPostState = {
+  isLoading: false,
+  isDone: false,
+  error: null,
   posts: [],
-  message: '',
 };
 
-const fetchPostsReducer = createReducer<State, Actions>(initialState)
-  .handleAction(fetchPosts.success, (state, action) => {
-    return { ...state, posts: action.payload.posts };
-  })
-  .handleAction(fetchPosts.failure, (state, action) => {
-    return { ...state, message: action.payload.message };
-  })
-  .handleAction(fetchPosts.request, (state) => {
-    return { ...state };
-  });
-
-const reducer = combineReducers({
-  fetchPostsReducer,
+const postSlice = createSlice({
+  name: 'postSlice',
+  initialState: initialState as IPostState,
+  reducers: {
+    GET_POSTS_REQUEST: (state) => {
+      state.isLoading = true;
+      state.isDone = false;
+    },
+    GET_POSTS_SUCCESS(state, action: PayloadAction<IPostResponse>) {
+      state.isLoading = false;
+      state.isDone = true;
+      state.error = null;
+      state.posts = action.payload.data;
+    },
+    GET_POSTS_FAILURE(state, action: PayloadAction<{ message: string }>) {
+      state.isLoading = false;
+      state.isDone = false;
+      state.error = action.payload.message;
+      state.posts = [];
+    },
+  },
 });
 
-export default reducer;
+const combineReducer = combineReducers({
+  postReducer: postSlice.reducer,
+});
+
+export const actions = postSlice.actions;
+export default combineReducer;

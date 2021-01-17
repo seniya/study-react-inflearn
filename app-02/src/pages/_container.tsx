@@ -1,9 +1,16 @@
 import { Switch, Route, Link, useLocation } from 'react-router-dom';
-import { lazy, Suspense, useState } from 'react';
-import { Layout, Menu } from 'antd';
-import { HomeOutlined, CoffeeOutlined, BulbOutlined, SettingOutlined } from '@ant-design/icons';
-import { useSelector } from 'react-redux';
+import { lazy, Suspense, useEffect, useState } from 'react';
+import { Button, Layout, Menu, Tooltip } from 'antd';
+import {
+  HomeOutlined,
+  CoffeeOutlined,
+  BulbOutlined,
+  SettingOutlined,
+  LogoutOutlined,
+} from '@ant-design/icons';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/configureStore';
+import userModule from '../store/modules/user';
 
 const Home = lazy(() => import('./home'));
 const About = lazy(() => import('./about'));
@@ -15,7 +22,16 @@ const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 
 function Container() {
-  const userState = useSelector((store: RootState) => store.user.getUser);
+  const dispatch = useDispatch();
+  const getUserInfo = () => {
+    dispatch(userModule.actions.GET_USER_REQUEST());
+  };
+
+  useEffect(() => {
+    getUserInfo();
+  }, []);
+
+  const userState = useSelector((store: RootState) => store.user.userReducer);
   const { user, token } = userState;
 
   const location = useLocation();
@@ -24,15 +40,35 @@ function Container() {
     setCollapsed(collapsed_);
   };
 
+  const onClickBtnSignout = () => {
+    console.log('onClickBtnSignout : ');
+    dispatch(userModule.actions.SIGN_OUT());
+  };
+
+  const renderBtnLogout = () => {
+    return (
+      <div style={{ position: 'absolute', right: '3px', top: '3px' }}>
+        <Tooltip title="sign-out">
+          <Button
+            type="link"
+            shape="circle"
+            icon={<LogoutOutlined />}
+            size="small"
+            onClick={onClickBtnSignout}
+          />
+        </Tooltip>
+      </div>
+    );
+  };
+
   return (
     <>
       <Layout style={{ minHeight: '100vh' }}>
         <Sider collapsible collapsed={collapsed} onCollapse={onCollapse}>
           <div className="logo">
-            <p>
-              <span>안녕하세요. </span>
-              <span>{token ? `${user.name} 님` : '손님'}</span>
-            </p>
+            <span>Hello. </span>
+            {<span>{token ? `${user.name} 님` : '손님'}</span>}
+            {token ? renderBtnLogout() : ''}
           </div>
           <Menu theme="dark" mode="inline" selectedKeys={[location.pathname]}>
             <Menu.Item key="/" icon={<HomeOutlined style={{ fontSize: '18px' }} />}>

@@ -1,52 +1,6 @@
-import { AxiosError } from 'axios';
 import { combineReducers } from 'redux';
-import { ActionType, createReducer, createAsyncAction } from 'typesafe-actions';
-import {
-  ISigninRequest,
-  ISigninResponse,
-  IUser,
-  IGetUserRequest,
-  IGetUserResponse,
-} from './user.interface';
-
-export const SIGN_IN = {
-  REQUEST: 'SIGN_IN_REQUEST',
-  SUCCESS: 'SIGN_IN_SUCCESS',
-  FAILURE: 'SIGN_IN_FAILURE',
-};
-
-export const GET_USER = {
-  REQUEST: 'GET_USER_REQUEST',
-  SUCCESS: 'GET_USER_SUCCESS',
-  FAILURE: 'GET_USER_FAILURE',
-};
-
-export const signInAction = createAsyncAction(SIGN_IN.REQUEST, SIGN_IN.SUCCESS, SIGN_IN.FAILURE)<
-  ISigninRequest,
-  ISigninResponse,
-  AxiosError
->();
-
-export const getUserAction = createAsyncAction(
-  GET_USER.REQUEST,
-  GET_USER.SUCCESS,
-  GET_USER.FAILURE,
-)<IGetUserRequest, IGetUserResponse, AxiosError>();
-
-const actions = {
-  signInAction,
-  getUserAction,
-};
-
-type Actions = ActionType<typeof actions>;
-
-type State = {
-  isLoading: boolean;
-  isDone: boolean;
-  error: string | null;
-  user: IUser;
-  token: string | null;
-};
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { IUserState, IUserRequest, IUserResponse } from './user.interface';
 
 const defaultUser = {
   id: null,
@@ -56,7 +10,7 @@ const defaultUser = {
   photo: '',
 };
 
-const initialState: State = {
+const initialState: IUserState = {
   isLoading: false,
   isDone: false,
   error: null,
@@ -64,75 +18,67 @@ const initialState: State = {
   token: null,
 };
 
-const getUser = createReducer<State, Actions>(initialState)
-  .handleAction(getUserAction.request, (state) => {
-    console.log('getUserAction.request : ');
-    return {
-      ...state,
-      isLoading: true,
-      isDone: false,
-    };
-  })
-  .handleAction(getUserAction.success, (state, action) => {
-    console.log('getUserAction.success : ', action);
-    const { user, token } = action.payload.data;
-    return {
-      ...state,
-      isLoading: false,
-      isDone: true,
-      error: null,
-      user,
-      token,
-    };
-  })
-  .handleAction(getUserAction.failure, (state, action) => {
-    console.log('getUserAction.failure : ', action);
-    return {
-      ...state,
-      isLoading: false,
-      isDone: false,
-      error: action.payload.message,
-      user: defaultUser,
-      token: null,
-    };
-  });
-
-const signin = createReducer<State, Actions>(initialState)
-  .handleAction(signInAction.request, (state) => {
-    console.log('signInAction.request : ');
-    return {
-      ...state,
-      isLoading: true,
-      isDone: false,
-    };
-  })
-  .handleAction(signInAction.success, (state, action) => {
-    console.log('signInAction.success : ', action);
-    const { user, token } = action.payload.data;
-    return {
-      ...state,
-      isLoading: false,
-      isDone: true,
-      error: null,
-      user,
-      token,
-    };
-  })
-  .handleAction(signInAction.failure, (state, action) => {
-    console.log('signInAction.failure : ', action);
-    return {
-      ...state,
-      isLoading: false,
-      isDone: false,
-      error: action.payload.message,
-      user: defaultUser,
-      token: null,
-    };
-  });
-
-const reducer = combineReducers({
-  getUser,
-  signin,
+const userSlice = createSlice({
+  name: 'userSlice',
+  initialState: initialState as IUserState,
+  reducers: {
+    SIGN_IN_REQUEST: {
+      reducer: (state) => {
+        state.isLoading = true;
+        state.isDone = false;
+      },
+      prepare: (reqData: IUserRequest) => ({
+        payload: reqData,
+      }),
+    },
+    SIGN_IN_SUCCESS(state, action: PayloadAction<IUserResponse>) {
+      const { user, token } = action.payload.data;
+      state.isLoading = false;
+      state.isDone = true;
+      state.error = null;
+      state.user = user;
+      state.token = token;
+    },
+    SIGN_IN_FAILURE(state, action: PayloadAction<{ message: string }>) {
+      state.isLoading = false;
+      state.isDone = false;
+      state.error = action.payload.message;
+      state.user = defaultUser;
+      state.token = null;
+    },
+    GET_USER_REQUEST: (state) => {
+      state.isLoading = true;
+      state.isDone = false;
+    },
+    GET_USER_SUCCESS(state, action: PayloadAction<IUserResponse>) {
+      const { user, token } = action.payload.data;
+      state.isLoading = false;
+      state.isDone = true;
+      state.error = null;
+      state.user = user;
+      state.token = token;
+    },
+    GET_USER_FAILURE(state, action: PayloadAction<{ message: string }>) {
+      state.isLoading = false;
+      state.isDone = false;
+      state.error = action.payload.message;
+      state.user = defaultUser;
+      state.token = null;
+    },
+    SIGN_OUT: (state) => {
+      localStorage.removeItem('MALRANG_TOKEN');
+      state.isLoading = false;
+      state.isDone = false;
+      state.error = null;
+      state.user = defaultUser;
+      state.token = null;
+    },
+  },
 });
 
-export default reducer;
+const combineReducer = combineReducers({
+  userReducer: userSlice.reducer,
+});
+
+export const actions = userSlice.actions;
+export default combineReducer;

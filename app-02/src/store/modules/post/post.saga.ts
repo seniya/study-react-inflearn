@@ -1,21 +1,21 @@
 import { call, put, takeLatest, all, fork } from 'redux-saga/effects';
-import { apiEmployees } from './post.api';
-import { FETCH_POSTS } from './post.reducer';
+import { apiGetPosts } from './post.api';
+import { actions } from './post.reducer';
 
-function* fetch() {
+const { GET_POSTS_REQUEST, GET_POSTS_SUCCESS, GET_POSTS_FAILURE } = actions;
+
+function* getPosts() {
   try {
-    const posts = yield call(apiEmployees);
-    yield put({ type: FETCH_POSTS.SUCCESS, payload: { posts: posts.data } });
+    const responseData = yield call(apiGetPosts);
+    yield put({ type: GET_POSTS_SUCCESS, payload: responseData });
   } catch (e) {
-    yield put({ type: FETCH_POSTS.FAILURE, payload: { message: e.message } });
+    yield put({ type: GET_POSTS_FAILURE, payload: e.message });
   }
 }
 
 function* watchFetch() {
-  yield takeLatest(FETCH_POSTS.REQUEST, fetch);
+  yield takeLatest(GET_POSTS_REQUEST, getPosts);
 }
-
-// export default [takeEvery(FETCH_POSTS.REQUEST, fetch)];
 
 export default function* saga() {
   yield all([fork(watchFetch)]);

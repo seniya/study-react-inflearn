@@ -6,37 +6,26 @@ export interface IUser {
   photo: string;
 }
 
-export interface ISigninRequest {
-  email: string;
-  password: string;
+export interface IUserRequest {
+  email?: string;
+  password?: string;
 }
 
 export interface IUserResponse {
+  data: {
+    user: IUser;
+    token: string | null;
+  };
+  result: {
+    code: string | null;
+    message: string | null;
+  };
+}
+
+export interface IUserState {
+  isLoading: boolean;
+  isDone: boolean;
+  error: string | null;
   user: IUser;
-}
-
-export interface ISigninResponse {
-  data: {
-    user: IUser;
-    token: string | null;
-  };
-  result: {
-    code: string | null;
-    message: string | null;
-  };
-}
-
-export interface IGetUserRequest {
-  token: string;
-}
-
-export interface IGetUserResponse {
-  data: {
-    user: IUser;
-    token: string | null;
-  };
-  result: {
-    code: string | null;
-    message: string | null;
-  };
+  token: string | null;
 }

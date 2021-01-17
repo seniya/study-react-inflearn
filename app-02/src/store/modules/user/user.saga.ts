@@ -1,37 +1,45 @@
 import { call, put, all, fork, takeLatest } from 'redux-saga/effects';
+import { PayloadAction } from '@reduxjs/toolkit';
 import { apiGetUser, apiSignin } from './user.api';
-import { getUserAction, GET_USER, signInAction, SIGN_IN } from './user.reducer';
+import { actions } from './user.reducer';
+import { IUserRequest } from './user.interface';
 
-function* signin(action: ReturnType<typeof signInAction.request>) {
+const {
+  SIGN_IN_REQUEST,
+  SIGN_IN_SUCCESS,
+  SIGN_IN_FAILURE,
+  GET_USER_REQUEST,
+  GET_USER_SUCCESS,
+  GET_USER_FAILURE,
+} = actions;
+
+function* signin(action: PayloadAction<IUserRequest>) {
   try {
     const responseData = yield call(apiSignin, action.payload);
-    console.log('signinSaga response: ', responseData);
-    yield put({ type: SIGN_IN.SUCCESS, payload: responseData });
-    yield put({ type: GET_USER.SUCCESS, payload: responseData });
+    yield put({ type: SIGN_IN_SUCCESS.type, payload: responseData });
+    yield put({ type: GET_USER_SUCCESS.type, payload: responseData });
   } catch (e) {
-    yield put({ type: SIGN_IN.FAILURE, payload: e });
+    yield put({ type: SIGN_IN_FAILURE.type, payload: e.message });
   }
 }
 
 function* watchSignin() {
-  yield takeLatest(SIGN_IN.REQUEST, signin);
+  yield takeLatest(SIGN_IN_REQUEST.type, signin);
 }
 
-function* getUserSaga(action: ReturnType<typeof getUserAction.request>) {
+function* getUserSaga() {
   try {
-    const responseData = yield call(apiGetUser, action.payload);
-    console.log('apiGetUser response: ', responseData);
-    yield put({ type: GET_USER.SUCCESS, payload: responseData });
+    const responseData = yield call(apiGetUser);
+    yield put({ type: SIGN_IN_SUCCESS.type, payload: responseData });
+    yield put({ type: GET_USER_SUCCESS.type, payload: responseData });
   } catch (e) {
-    yield put({ type: GET_USER.FAILURE, payload: e });
+    yield put({ type: GET_USER_FAILURE.type, payload: { message: e.message } });
   }
 }
 
 function* watchGetUser() {
-  yield takeLatest(GET_USER.REQUEST, getUserSaga);
+  yield takeLatest(GET_USER_REQUEST.type, getUserSaga);
 }
-
-// export default [takeEvery(SIGN_IN.REQUEST, signinSaga), takeEvery(GET_USER.REQUEST, getUserSaga)];
 
 export default function* saga() {
   yield all([fork(watchSignin), fork(watchGetUser)]);
