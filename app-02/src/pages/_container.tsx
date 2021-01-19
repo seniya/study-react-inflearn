@@ -15,8 +15,55 @@ import userModule from '../store/modules/user';
 const Home = lazy(() => import('./home'));
 const About = lazy(() => import('./about'));
 const SignIn = lazy(() => import('./signin'));
-const Blog = lazy(() => import('./blog'));
+const Blog = lazy(() => import('./blog/_blog.container'));
 const SignUp = lazy(() => import('./signup'));
+
+/*
+const routes = [
+  {
+    path: '/',
+    component: Home,
+  },
+  {
+    path: '/about',
+    component: About,
+  },
+  {
+    path: '/sign-up',
+    component: SignUp,
+  },
+  {
+    path: '/sign-in',
+    component: SignIn,
+  },
+  {
+    path: '/blog',
+    component: Blog,
+    routes: [
+      {
+        path: '/blog/1',
+        component: Blog,
+      },
+      {
+        path: '/blog/2',
+        component: Blog,
+      },
+    ],
+  },
+];
+
+function RouteWithSubRoutes(route) {
+  return (
+    <Route
+      path={route.path}
+      render={(props) => (
+        // pass the sub-routes down to keep nesting
+        <route.component {...props} routes={route.routes} />
+      )}
+    />
+  );
+}
+*/
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -41,7 +88,6 @@ function Container() {
   };
 
   const onClickBtnSignout = () => {
-    console.log('onClickBtnSignout : ');
     dispatch(userModule.actions.SIGN_OUT());
   };
 
@@ -74,8 +120,8 @@ function Container() {
             <Menu.Item key="/" icon={<HomeOutlined style={{ fontSize: '18px' }} />}>
               <Link to="/">Home</Link>
             </Menu.Item>
-            <Menu.Item key="/blog" icon={<CoffeeOutlined style={{ fontSize: '18px' }} />}>
-              <Link to="/blog">Blog</Link>
+            <Menu.Item key="/blogs" icon={<CoffeeOutlined style={{ fontSize: '18px' }} />}>
+              <Link to="/blogs">Blog</Link>
             </Menu.Item>
             <Menu.Item key="/about" icon={<BulbOutlined style={{ fontSize: '18px' }} />}>
               <Link to="/about">About</Link>
@@ -101,7 +147,7 @@ function Container() {
                 <Switch>
                   <Route exact path="/" component={Home} />
                   <Route path="/about" component={About} />
-                  <Route path="/blog" component={Blog} />
+                  <Route path="/blogs" component={Blog} />
                   <Route path="/sign-up" component={SignUp} />
                   <Route path="/sign-in" component={SignIn} />
                 </Switch>
