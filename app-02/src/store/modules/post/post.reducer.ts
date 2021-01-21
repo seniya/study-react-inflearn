@@ -1,12 +1,13 @@
 import { combineReducers } from 'redux';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IPostState, IPostResponse } from './post.interface';
+import { IPostState, IPostsResponse, IPostResponse, IPostRequest } from './post.interface';
 
 const initialState: IPostState = {
   isLoading: false,
   isDone: false,
   error: null,
   posts: [],
+  post: undefined,
 };
 
 const postSlice = createSlice({
@@ -17,7 +18,7 @@ const postSlice = createSlice({
       state.isLoading = true;
       state.isDone = false;
     },
-    GET_POSTS_SUCCESS(state, action: PayloadAction<IPostResponse>) {
+    GET_POSTS_SUCCESS(state, action: PayloadAction<IPostsResponse>) {
       state.isLoading = false;
       state.isDone = true;
       state.error = null;
@@ -28,6 +29,26 @@ const postSlice = createSlice({
       state.isDone = false;
       state.error = action.payload.message;
       state.posts = [];
+    },
+    ADD_POST_REQUEST: {
+      reducer: (state) => {
+        state.isLoading = true;
+        state.isDone = false;
+      },
+      prepare: (reqData: IPostRequest) => ({
+        payload: reqData,
+      }),
+    },
+    ADD_POST_SUCCESS(state, action: PayloadAction<IPostResponse>) {
+      state.isLoading = false;
+      state.isDone = true;
+      state.error = null;
+      state.posts.push(action.payload.data);
+    },
+    ADD_POST_FAILURE(state, action: PayloadAction<{ message: string }>) {
+      state.isLoading = false;
+      state.isDone = false;
+      state.error = action.payload.message;
     },
   },
 });
