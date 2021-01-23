@@ -50,6 +50,12 @@ const postSlice = createSlice({
       state.isDone = false;
       state.error = action.payload.message;
     },
+    POST_RESET(state) {
+      state.isLoading = false;
+      state.isDone = false;
+      state.error = null;
+      state.post = undefined;
+    },
   },
 });
 

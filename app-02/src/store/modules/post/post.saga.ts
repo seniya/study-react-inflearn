@@ -29,8 +29,6 @@ function* watchGetPosts() {
 function* addPost(action: PayloadAction<IPostRequest>) {
   try {
     const responseData = yield call(apiAddPost, action.payload);
-    console.log('getPosts responseData : ', responseData);
-    console.log('getPosts next action ADD_POST_SUCCESS.type : ', ADD_POST_SUCCESS.type);
     yield put({ type: ADD_POST_SUCCESS.type, payload: responseData });
   } catch (e) {
     yield put({ type: ADD_POST_FAILURE.type, payload: e.message });

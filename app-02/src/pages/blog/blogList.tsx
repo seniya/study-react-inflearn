@@ -32,6 +32,9 @@ function blogList() {
 
   useEffect(() => {
     fetchPosts();
+    return () => {
+      dispatch(postModule.actions.POST_RESET());
+    };
   }, []);
 
   return (

@@ -13,7 +13,8 @@ import Marker from '@editorjs/marker';
 import Quote from '@editorjs/quote';
 import Table from '@editorjs/table';
 import Warning from '@editorjs/warning';
-import Attaches from '@editorjs/attaches';
+import Attaches from './editorjsAttaches';
+// import Attaches from '@editorjs/attaches';
 // import InlineImage from 'editorjs-inline-image';
 
 const DEFAULT_INITIAL_DATA = () => {
@@ -43,8 +44,10 @@ const Editor = (props) => {
       initEditor();
     }
     return () => {
-      ejInstance.current.destroy();
-      ejInstance.current = null;
+      if (ejInstance.current) {
+        ejInstance.current.destroy();
+        ejInstance.current = null;
+      }
     };
   }, []);
 
@@ -56,18 +59,6 @@ const Editor = (props) => {
       onReady: () => {
         ejInstance.current = editor;
         props.onReadyEditor(editor);
-      },
-      onChange: function (editor_) {
-        // console.log("Now I know that Editor's content changed!");
-        // let content = await editor_.saver.save();
-        // console.log("Now I know that Editor's content ", content);
-        // this.save()
-        //   .then((outputData) => {
-        //     props.onUpdateData(outputData);
-        //   })
-        //   .catch((error) => {
-        //     console.log('Saving failed: ', error);
-        //   });
       },
       autofocus: true,
       tools: {
@@ -85,18 +76,29 @@ const Editor = (props) => {
         linkTool: {
           class: Link,
           config: {
-            endpoint: `${process.env.VUE_APP_API}/link`,
+            endpoint: `${
+              process.env.NODE_ENV === 'development'
+                ? process.env.REACT_APP_API_URL_DEV
+                : process.env.REACT_APP_API_URL_PROD
+            }/pagemeta`,
           },
         },
         image: {
           class: ImageTool,
           config: {
-            uploader: { uploadByFile: props.onAddImageBlobHook, uploadByUrl: props.onAddImageHook },
+            uploader: { uploadByFile: props.onAddImageBlobHook },
           },
         },
         attaches: {
           class: Attaches,
-          config: { endpoint: `${process.env.VUE_APP_API}/file/attache`, field: 'file' },
+          config: {
+            endpoint: `${
+              process.env.NODE_ENV === 'development'
+                ? process.env.REACT_APP_API_URL_DEV
+                : process.env.REACT_APP_API_URL_PROD
+            }/attachments/file`,
+            field: 'file',
+          },
         },
       },
     });

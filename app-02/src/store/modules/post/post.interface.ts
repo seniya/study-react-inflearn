@@ -1,3 +1,4 @@
+import { IAttachment } from '../attachment/attachment.interface';
 import { IUser } from '../user/user.interface';
 
 export interface IPost {
@@ -15,6 +16,11 @@ export interface IPost {
   categories?: [];
 }
 
+export interface ICategory {
+  id?: number;
+  name: string;
+}
+
 export interface IPostRequest {
   title: string;
   desc: string;
@@ -26,7 +32,8 @@ export interface IPostRequest {
   createdAt?: Date;
   updatedAt?: Date;
   author?: IUser;
-  categories?: [];
+  categories?: ICategory[];
+  attachment?: IAttachment;
 }
 
 export interface IPostsResponse {
