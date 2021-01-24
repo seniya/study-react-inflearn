@@ -51,3 +51,15 @@ export async function apiUpdatePost(data: IPostRequest) {
     throw new Error(response.data?.result?.message);
   }
 }
+
+export async function apiRemovePost(id: string) {
+  const response: AxiosResponse = await axiosInstance({
+    method: 'POST',
+    url: `/posts/delete/${id}`,
+  });
+  if (response.data?.result?.code === 'RS0000') {
+    return response.data;
+  } else {
+    throw new Error(response.data?.result?.message);
+  }
+}

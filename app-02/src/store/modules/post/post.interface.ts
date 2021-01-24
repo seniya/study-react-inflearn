@@ -72,4 +72,8 @@ export interface IPostState {
   isLoadingUpdatePost: boolean;
   isDoneUpdatePost: boolean;
   errorUpdatePost: string | null;
+
+  isLoadingRemovePost: boolean;
+  isDoneRemovePost: boolean;
+  errorRemovePost: string | null;
 }

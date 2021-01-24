@@ -1,6 +1,6 @@
 import { call, put, takeLatest, all, fork } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { apiAddPost, apiGetPost, apiGetPosts, apiUpdatePost } from './post.api';
+import { apiAddPost, apiGetPost, apiGetPosts, apiRemovePost, apiUpdatePost } from './post.api';
 import { IPostRequest } from './post.interface';
 import { actions } from './post.reducer';
 
@@ -17,6 +17,9 @@ const {
   UPDATE_POST_REQUEST,
   UPDATE_POST_SUCCESS,
   UPDATE_POST_FAILURE,
+  REMOVE_POST_REQUEST,
+  REMOVE_POST_SUCCESS,
+  REMOVE_POST_FAILURE,
 } = actions;
 
 function* getPosts() {
@@ -71,6 +74,25 @@ function* watchupdatePost() {
   yield takeLatest(UPDATE_POST_REQUEST.type, updatePost);
 }
 
+function* removePost(action: PayloadAction<string>) {
+  try {
+    const responseData = yield call(apiRemovePost, action.payload);
+    yield put({ type: REMOVE_POST_SUCCESS.type, payload: responseData });
+  } catch (e) {
+    yield put({ type: REMOVE_POST_FAILURE.type, payload: e.message });
+  }
+}
+
+function* watchRemovePost() {
+  yield takeLatest(REMOVE_POST_REQUEST.type, removePost);
+}
+
 export default function* saga() {
-  yield all([fork(watchGetPosts), fork(watchGetPost), fork(watchAddPost), fork(watchupdatePost)]);
+  yield all([
+    fork(watchGetPosts),
+    fork(watchGetPost),
+    fork(watchAddPost),
+    fork(watchupdatePost),
+    fork(watchRemovePost),
+  ]);
 }

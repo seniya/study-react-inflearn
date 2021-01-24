@@ -20,6 +20,10 @@ const initialState: IPostState = {
   isLoadingUpdatePost: false,
   isDoneUpdatePost: false,
   errorUpdatePost: null,
+
+  isLoadingRemovePost: false,
+  isDoneRemovePost: false,
+  errorRemovePost: null,
 };
 
 const postSlice = createSlice({
@@ -116,7 +120,7 @@ const postSlice = createSlice({
       state.isLoadingUpdatePost = false;
       state.isDoneUpdatePost = true;
       state.errorUpdatePost = null;
-      state.posts.push(action.payload.data);
+      // TODO: state에서 해당 객체 내용 교체
     },
     UPDATE_POST_FAILURE(state, action: PayloadAction<{ message: string }>) {
       state.isLoadingUpdatePost = false;
@@ -127,6 +131,33 @@ const postSlice = createSlice({
       state.isLoadingUpdatePost = false;
       state.isDoneUpdatePost = false;
       state.errorUpdatePost = null;
+      state.post = undefined;
+    },
+
+    REMOVE_POST_REQUEST: {
+      reducer: (state) => {
+        state.isLoadingRemovePost = true;
+        state.isDoneRemovePost = false;
+      },
+      prepare: (id: string) => ({
+        payload: id,
+      }),
+    },
+    REMOVE_POST_SUCCESS(state) {
+      state.isLoadingRemovePost = false;
+      state.isDoneRemovePost = true;
+      state.errorRemovePost = null;
+      state.post = undefined;
+    },
+    REMOVE_POST_FAILURE(state, action: PayloadAction<{ message: string }>) {
+      state.isLoadingRemovePost = false;
+      state.isDoneRemovePost = false;
+      state.errorRemovePost = action.payload.message;
+    },
+    REMOVE_POST_RESET(state) {
+      state.isLoadingRemovePost = false;
+      state.isDoneRemovePost = false;
+      state.errorRemovePost = null;
       state.post = undefined;
     },
   },
