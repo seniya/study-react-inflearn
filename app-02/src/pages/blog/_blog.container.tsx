@@ -12,9 +12,8 @@ function Blog() {
       <div>블로그 컨테이너</div>
       <div>
         <Link to={`/blogs`}>리스트</Link>
+        &nbsp;&nbsp;
         <Link to={`/blogs/create`}>작성</Link>
-        <Link to={`/blogs/update/1`}>수정</Link>
-        <Link to={`/blogs/read/5`}>상세</Link>
       </div>
       <div>
         <Switch>

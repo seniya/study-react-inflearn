@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/configureStore';
 import postModule from '../../store/modules/post';
 
-import { List, Avatar, Space } from 'antd';
+import { List, Space } from 'antd';
 import { MessageOutlined, LikeOutlined, StarOutlined } from '@ant-design/icons';
 import React from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
@@ -24,26 +24,25 @@ function blogList() {
   const { url } = useRouteMatch();
   const dispatch = useDispatch();
   const postState = useSelector((store: RootState) => store.post.postReducer);
-  const { posts } = postState;
+  const { isLoadingReadPosts, posts } = postState;
 
   const fetchPosts = () => {
-    dispatch(postModule.actions.GET_POSTS_REQUEST());
+    dispatch(postModule.actions.READ_POSTS_REQUEST());
   };
 
   useEffect(() => {
     fetchPosts();
     return () => {
-      dispatch(postModule.actions.POST_RESET());
+      dispatch(postModule.actions.READ_POSTS_RESET());
     };
   }, []);
 
   return (
-    <div>
-      블로그 리스트
-      <div>에헴</div>
+    <>
       <List
         itemLayout="vertical"
         size="large"
+        loading={isLoadingReadPosts}
         pagination={{
           onChange: (page) => {
             console.log(page);
@@ -82,7 +81,7 @@ function blogList() {
         )}
       />
       ,
-    </div>
+    </>
   );
 }
 

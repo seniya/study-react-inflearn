@@ -9,27 +9,17 @@ import { RootState } from '../../store/configureStore';
 import postModule from '../../store/modules/post';
 import { IPostRequest } from '../../store/modules/post/post.interface';
 import Editor from './components/blogEditor';
-import { apiAddImage } from '../../store/modules/attachment/attachment.api';
-
-const CATEGORY_ITEMS = [
-  { id: 1, name: 'Blog' },
-  { id: 2, name: 'Test' },
-  { id: 3, name: 'Test1' },
-  { id: 4, name: 'Test2' },
-  { id: 5, name: 'Test3' },
-];
-const CATEGORY_NAMES = ['Blog', 'Test', 'Test1', 'Test2', 'Test3'];
+import { CATEGORY_ITEMS, CATEGORY_NAMES } from '../../utils/constant';
 
 function BlogCreate() {
   const history = useHistory();
   const dispatch = useDispatch();
   const [editor, setEditor] = useState<any>();
-  // let editor: any = null;
 
   const postState = useSelector((store: RootState) => store.post.postReducer);
-  const { isLoading, isDone, error: isSigninError } = postState;
+  const { isLoadingAddPost, isDoneAddPost, errorAddPost } = postState;
 
-  const onReadyEditor = (editor_: any): void => {
+  const onReadyEditor_ = (editor_: any): void => {
     console.log('onReadyEditor_ data : ', editor_);
     setEditor(editor_);
   };
@@ -41,40 +31,17 @@ function BlogCreate() {
   }, []);
 
   useEffect(() => {
-    if (isDone) {
+    if (isDoneAddPost) {
       message.success('성공적');
-      // history.push('/blogs');
+      history.push('/blogs');
     }
-    if (isSigninError) {
-      message.error(isSigninError);
+    if (errorAddPost) {
+      message.error(errorAddPost);
     }
     return () => {
-      dispatch(postModule.actions.POST_RESET());
+      dispatch(postModule.actions.ADD_POST_RESET());
     };
-  }, [isDone, isSigninError]);
-
-  const imageUpload = async (file: File) => {
-    const fdata = new FormData();
-    fdata.append('title', 'editor_upload');
-    fdata.append('file', file);
-    try {
-      const resData = await apiAddImage(fdata);
-      if (resData.result.code !== 'RS0000') throw new Error(resData.result.message || 'error');
-      return resData;
-    } catch (error) {
-      throw new Error(error || 'error');
-    }
-  };
-  const onAddImageBlobHook_ = async (file: File) => {
-    const resData = await imageUpload(file);
-    const returnValue = {
-      success: 1,
-      file: { url: resData.data.download },
-    };
-    return new Promise((resolve) => {
-      resolve(returnValue);
-    });
-  };
+  }, [isDoneAddPost, errorAddPost]);
 
   const fetchPostData = async (values: any) => {
     const content = await editor.saver.save();
@@ -119,11 +86,6 @@ function BlogCreate() {
     message.error(errorInfo);
   };
 
-  const formItemLayout = {
-    labelCol: { span: 6 },
-    wrapperCol: { span: 18 },
-  };
-
   const [fileList, updateFileList] = useState<any[]>([]);
 
   const uploadUrl = `${
@@ -140,7 +102,6 @@ function BlogCreate() {
     },
     accept: 'image/png, image/jpeg',
     onChange(info: any) {
-      console.log('uploadProps 1 info.fileList : ', info.fileList);
       if (info.file.status !== 'uploading') {
         updateFileList(info.fileList.filter((file: any) => !!file.status));
       }
@@ -149,7 +110,6 @@ function BlogCreate() {
       } else if (info.file.status === 'error') {
         message.error(`${info.file.name} file upload failed.`);
       }
-      console.log('uploadProps 2 fileList : ', fileList);
     },
   };
 
@@ -162,7 +122,8 @@ function BlogCreate() {
   return (
     <>
       <Form
-        {...formItemLayout}
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 18 }}
         layout="horizontal"
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
@@ -172,7 +133,7 @@ function BlogCreate() {
           extra={<a href="#">Cancel</a>}
           style={{ width: '100%' }}
           actions={[
-            <Button type="primary" htmlType="submit" loading={isLoading}>
+            <Button type="primary" htmlType="submit" loading={isLoadingAddPost}>
               Submit
             </Button>,
           ]}
@@ -227,7 +188,7 @@ function BlogCreate() {
           </Collapse>
           ,
           <Card title="본문 (Content)" style={{ width: '100%' }}>
-            <Editor onReadyEditor={onReadyEditor} onAddImageBlobHook={onAddImageBlobHook_} />
+            <Editor onReadyEditor={onReadyEditor_} />
           </Card>
         </Card>
       </Form>

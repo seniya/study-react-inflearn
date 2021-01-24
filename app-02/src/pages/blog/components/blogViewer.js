@@ -17,31 +17,6 @@ import Attaches from './editorjsAttaches';
 // import Attaches from '@editorjs/attaches';
 // import InlineImage from 'editorjs-inline-image';
 
-import { apiAddImage } from '../../../store/modules/attachment/attachment.api';
-
-const imageUpload = async (file) => {
-  const fdata = new FormData();
-  fdata.append('title', 'editor_upload');
-  fdata.append('file', file);
-  try {
-    const resData = await apiAddImage(fdata);
-    if (resData.result.code !== 'RS0000') throw new Error(resData.result.message || 'error');
-    return resData;
-  } catch (error) {
-    throw new Error(error || 'error');
-  }
-};
-const onAddImageBlobHook = async (file) => {
-  const resData = await imageUpload(file);
-  const returnValue = {
-    success: 1,
-    file: { url: resData.data.download },
-  };
-  return new Promise((resolve) => {
-    resolve(returnValue);
-  });
-};
-
 const EDITTOR_HOLDER_ID = 'editorjs';
 
 const Editor = (props) => {
@@ -62,12 +37,12 @@ const Editor = (props) => {
 
   const initEditor = () => {
     const editor = new EditorJS({
+      readOnly: true,
       holder: EDITTOR_HOLDER_ID,
       logLevel: 'ERROR',
-      data: props.data || '',
+      data: props.editorData,
       onReady: () => {
         ejInstance.current = editor;
-        props.onReadyEditor(editor);
       },
       autofocus: true,
       tools: {
@@ -84,30 +59,12 @@ const Editor = (props) => {
         warning: Warning,
         linkTool: {
           class: Link,
-          config: {
-            endpoint: `${
-              process.env.NODE_ENV === 'development'
-                ? process.env.REACT_APP_API_URL_DEV
-                : process.env.REACT_APP_API_URL_PROD
-            }/pagemeta`,
-          },
         },
         image: {
           class: ImageTool,
-          config: {
-            uploader: { uploadByFile: onAddImageBlobHook },
-          },
         },
         attaches: {
           class: Attaches,
-          config: {
-            endpoint: `${
-              process.env.NODE_ENV === 'development'
-                ? process.env.REACT_APP_API_URL_DEV
-                : process.env.REACT_APP_API_URL_PROD
-            }/attachments/file`,
-            field: 'file',
-          },
         },
       },
     });

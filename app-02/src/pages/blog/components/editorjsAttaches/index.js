@@ -60,13 +60,19 @@ const DownloadIcon =
  * @property {AttachesToolConfig} config
  */
 export default class AttachesTool {
+  static get isReadOnlySupported() {
+    return true;
+  }
+
   /**
    * @param {AttachesToolData} data
    * @param {Object} config
    * @param {API} api
+   * @param {boolean} readOnly - read-only mode flag
    */
-  constructor({ data, config, api }) {
+  constructor({ data, config, api, readOnly }) {
     this.api = api;
+    this.readOnly = readOnly;
 
     this.nodes = {
       wrapper: null,
@@ -327,7 +333,7 @@ export default class AttachesTool {
 
     if (title) {
       this.nodes.title = this.make('div', this.CSS.title, {
-        contentEditable: true,
+        contentEditable: !this.readOnly,
       });
 
       this.nodes.title.textContent = title;

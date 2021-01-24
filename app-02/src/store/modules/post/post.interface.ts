@@ -14,6 +14,7 @@ export interface IPost {
   updatedAt?: Date;
   author?: IUser;
   categories?: [];
+  attachment?: IAttachment;
 }
 
 export interface ICategory {
@@ -22,6 +23,7 @@ export interface ICategory {
 }
 
 export interface IPostRequest {
+  id?: number;
   title: string;
   desc: string;
   subject: string;
@@ -53,9 +55,21 @@ export interface IPostResponse {
 }
 
 export interface IPostState {
-  isLoading: boolean;
-  isDone: boolean;
-  error: string | null;
+  isLoadingReadPosts: boolean;
+  isDoneReadPosts: boolean;
+  errorReadPosts: string | null;
   posts: IPost[];
+
+  isLoadingReadPost: boolean;
+  isDoneReadPost: boolean;
+  errorReadPost: string | null;
   post?: IPost;
+
+  isLoadingAddPost: boolean;
+  isDoneAddPost: boolean;
+  errorAddPost: string | null;
+
+  isLoadingUpdatePost: boolean;
+  isDoneUpdatePost: boolean;
+  errorUpdatePost: string | null;
 }
